@@ -1,0 +1,250 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "../protos/Go1.proto"
+EXTERNPROTO "../protos/Checkpoint.proto"
+EXTERNPROTO "../protos/Wall.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/toys/protos/RubberDuck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/PlasticCrate.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/pallet/protos/WoodenPalletStack.proto"
+
+WorldInfo {
+  basicTimeStep 4
+  contactProperties [
+    ContactProperties {
+      material2 "ground"
+      coulombFriction [
+        1.3
+      ]
+      bounce 0
+    }
+  ]
+}
+Viewpoint {
+  orientation 0.39920512298453836 0.30489791687981016 -0.8646805942457897 2.014062144497393
+  position 18.07701792597137 31.203362719614155 36.65264029469404
+  follow "Go1"
+  followSmoothness 0.35
+}
+TexturedBackground {
+  texture "factory"
+}
+TexturedBackgroundLight {
+  texture "factory"
+  luminosity 1.6
+}
+DirectionalLight {
+  direction 0.6 -1 -0.9
+  intensity 2.2
+  castShadows TRUE
+}
+DEF FLOOR Solid {
+  translation 3.5 0.85 -0.5
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture { url [ "../protos/textures/Checker.png" ] }
+        roughness 0.6
+        metalness 0
+        textureTransform TextureTransform {
+          scale 12 8
+        }
+      }
+      geometry Box { size 24.6 18.3 1 }
+    }
+  ]
+  contactMaterial "ground"
+  boundingObject Box {
+    size 24 16 1
+  }
+}
+DEF ROBOT Go1 {
+  translation 0.84 0.03 0.34
+}
+DEF REF Robot {
+  name "referee"
+  controller "referee"
+  controllerArgs [
+    "../../config/level1.json"
+  ]
+  supervisor TRUE
+}
+
+# Go1 instead of the Go2 of the original level: the robot is controlled by go1_sim, not participant.
+# ── checkpoints (glowing holo goals; referee recolours on score) ──
+# Course: straight → S-chicane → cp2 → LEFT (cp3) → RIGHT → LEFT (cp4) → RIGHT → finish (4 turns).
+DEF CP1 Checkpoint { translation 2.8 0 0.03 name "cp1" radius 0.5 color 0.95 0.85 0.1 }
+DEF CP2 Checkpoint { translation 5.6 0 0.03 name "cp2" radius 0.5 }
+DEF CP3 Checkpoint { translation 7.9 1.3 0.03 name "cp3" radius 0.45 }
+DEF CP4 Checkpoint { translation 8.1 3.4 0.03 name "cp4" radius 0.45 }
+DEF FINISH Checkpoint { translation 11.8 5.2 0.03 name "finish" radius 0.3 color 0.6 0.2 0.9 }
+
+# ── S-chicane maze: weave around Wall1 (pass at y>0), then Wall2 (pass at y<0) ──
+  Wall { translation 7.6 -3.4 0.25 size 1.2 0.1 0.5 name "gw0" }
+  Wall { translation 2.8 3 0.25 size 1.2 0.1 0.5 name "gw1" }
+  Wall { translation 9.2 7 0.25 size 0.1 2.4 0.5 name "gw2" }
+  Wall { translation -0.4 1.4 0.25 size 3.2 0.1 0.5 name "gw3" }
+  Wall { translation 5.2 4.6 0.25 size 2.5 0.1 0.5 name "gw4" }
+  Wall { translation -2 3.8 0.25 size 0.1 3.2 0.5 name "gw5" }
+  Wall { translation 8.4 -1.8 0.25 size 0.1 2.8 0.5 name "gw6" }
+  Wall { translation 4.4 -2.6 0.25 size 2.8 0.1 0.5 name "gw7" }
+  Wall { translation 10 2.2 0.25 size 3.6 0.1 0.5 name "gw8" }
+  Wall { translation 8.4 2.2 0.25 size 0.1 1.8 0.5 name "gw9" }
+  Wall { translation 6 7 0.25 size 10.3 0.1 0.5 name "gw10" }
+  Wall { translation 5.9 -4.2 0.25 size 19 0.1 0.5 name "gw11" }
+  Wall { translation 5.9 9.7 0.25 size 19 0.1 0.5 name "gw12" }
+  Wall { translation -3.6 2.75 0.25 size 0.1 13.9 0.5 name "gw13" }
+  Wall { translation 15.4 2.75 0.25 size 0.1 13.9 0.5 name "gw14" }
+
+# ── snake after cp2: LEFT (north, cp3) → RIGHT (east) → LEFT (north, cp4) → RIGHT (east) → finish.
+# All corridors 1.8 m wide.
+    # outer wall of turn 1
+    # south side of east leg C
+    # west side of north leg B
+    # north side of leg C (ends at turn 3)
+    # east side of north leg D (outer of turn 3)
+    # west side of leg D
+    # north side of east leg E (outer of turn 4)
+    # south side of leg E
+
+# ══════════ cosmetic decor (all OUTSIDE the course; non-colliding or well clear) ══════════
+# MTS sponsor banners (custom, non-colliding) flanking the course
+DEF BANNER_N Solid {
+  translation 3.75 4.3 1.15
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.89 0.04 0.07
+        roughness 0.4
+        metalness 0.1
+        emissiveColor 0.5 0.02 0.03
+        emissiveIntensity 0.5
+      }
+      geometry Box {
+        size 4 0.06 1.1
+      }
+    }
+    Pose {
+      translation -1.9 0 -0.9
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.14 0.14 0.16
+            roughness 0.5
+            metalness 0.6
+          }
+          geometry Box {
+            size 0.08 0.08 1.9
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 1.9 0 -0.9
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.14 0.14 0.16
+            roughness 0.5
+            metalness 0.6
+          }
+          geometry Box {
+            size 0.08 0.08 1.9
+          }
+        }
+      ]
+    }
+  ]
+  name "banner_n"
+}
+DEF BANNER_S Solid {
+  translation 3.75 -3.2 1.15
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.89 0.04 0.07
+        roughness 0.4
+        metalness 0.1
+        emissiveColor 0.5 0.02 0.03
+        emissiveIntensity 0.5
+      }
+      geometry Box {
+        size 4 0.06 1.1
+      }
+    }
+    Pose {
+      translation -1.9 0 -0.9
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.14 0.14 0.16
+            roughness 0.5
+            metalness 0.6
+          }
+          geometry Box {
+            size 0.08 0.08 1.9
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 1.9 0 -0.9
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.14 0.14 0.16
+            roughness 0.5
+            metalness 0.6
+          }
+          geometry Box {
+            size 0.08 0.08 1.9
+          }
+        }
+      ]
+    }
+  ]
+  name "banner_s"
+}
+RubberDuck {
+  translation 1.0016245025347776 2.299999999933438 0.04093801820486578
+  rotation -0.00018529227675821258 -0.00028060403636260347 -0.9999999434640718 1.646964234933129e-12
+  name "duck1"
+  scale 2
+}
+RubberDuck {
+  translation 2.001624502534778 2.299999999933438 0.04093801820486578
+  rotation -0.0002856985890067273 -0.00024339489138803494 -0.9999999295676191 1.6470939256735424e-12
+  name "duck2"
+  scale 2
+}
+RubberDuck {
+  translation 3.001624502534777 2.299999999933438 0.04093801820486578
+  rotation -0.0002755032756477682 -0.00015228657610515925 -0.9999999504533708 1.6470963776084553e-12
+  name "duck3"
+  scale 2
+}
+RubberDuck {
+  translation 4.001624502534778 2.299999999933438 0.04093801820486578
+  rotation -0.00019801326067183294 -0.00020026899942557894 -0.9999999603415374 1.6470207344071075e-12
+  name "duck4"
+  scale 2
+}
+RubberDuck {
+  translation 5.00162450253478 2.299999999933438 0.04093801820486578
+  rotation -0.00019234957573116988 -0.00017524352541645638 -0.9999999661456732 1.6468011009064581e-12
+  name "duck5"
+  scale 2
+}
+PlasticCrate {
+  translation 13.4 5.2 0
+  name "crate1"
+}
+PlasticCrate {
+  translation 13.4 5.2 0.28
+  name "crate2"
+}
+WoodenPalletStack {
+  translation 9.2 -2.2 0
+  name "pallets"
+}

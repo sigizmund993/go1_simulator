@@ -1,0 +1,5 @@
+.git
+.venv
+policies
+worlds/angled_test.wbt
+**/__pycache__

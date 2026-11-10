@@ -1,0 +1,103 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "../protos/Go1.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+
+WorldInfo {
+  basicTimeStep 4
+  contactProperties [
+    ContactProperties {
+      material1 "foot"
+      material2 "ground"
+      coulombFriction [
+        1.3
+      ]
+      bounce 0
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.25 0.25 0.93 1.64
+  position 0.3 -3.2 2.0
+  follow "Go1"
+  followSmoothness 0.35
+}
+TexturedBackground {
+  texture "factory"
+}
+TexturedBackgroundLight {
+  texture "factory"
+  luminosity 1.6
+}
+DEF FLOOR Solid {
+  translation 0 0 -0.5
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "checker.png"
+          ]
+        }
+        roughness 0.6
+        metalness 0
+        textureTransform TextureTransform {
+          scale 5 5
+        }
+      }
+      geometry Box {
+        size 20 20 1
+      }
+    }
+  ]
+  name "floor"
+  contactMaterial "ground"
+  boundingObject Box {
+    size 20 20 1
+  }
+}
+DEF BOX1 Solid {
+  translation 2.5 0.6 0.25
+  children [
+    DEF BOX_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColor 0.8 0.45 0.15
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 0.5 0.5 0.5
+      }
+    }
+  ]
+  name "box1"
+  boundingObject USE BOX_SHAPE
+}
+DEF BOX2 Solid {
+  translation -1.5 -2 0.25
+  children [
+    USE BOX_SHAPE
+  ]
+  name "box2"
+  boundingObject USE BOX_SHAPE
+}
+DEF WALL Solid {
+  translation 0 4 0.4
+  children [
+    DEF WALL_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColor 0.55 0.6 0.7
+        roughness 0.8
+        metalness 0
+      }
+      geometry Box {
+        size 6 0.1 0.8
+      }
+    }
+  ]
+  name "wall"
+  boundingObject USE WALL_SHAPE
+}
+Go1 {
+}

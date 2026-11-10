@@ -1,0 +1,14 @@
+# Proprietary or copied material: never commit, never publish.
+# policies/: walking policy extracted from the robot firmware (TrueTechArena).
+policies/
+# Scratch test world, not part of the simulator.
+worlds/angled_test.wbt
+# Local Python environment and generated files.
+.venv/
+__pycache__/
+*.pyc
+worlds/.*.wbproj
+worlds/.*.jpg
+controllers/*/runtime.ini
+controllers/referee/result.json
+controllers/referee/run.mp4
